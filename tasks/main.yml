@@ -8,17 +8,20 @@
   delegate_to: localhost
 
 - name: Install logrotate
+  become: yes
   ansible.builtin.package:
     name: "{{ logrotate_packages }}"
     state: present
 
 - name: Configure logrotate
+  become: yes
   ansible.builtin.template:
     src: "{{ logrotate_config_file }}.j2"
     dest: "{{ logrotate_config_directory }}/{{ logrotate_config_file }}"
     mode: "0644"
 
 - name: Generate logrotate.d files
+  become: yes
   ansible.builtin.template:
     src: entry.j2
     dest: "{{ logrotate_confd_directory }}/{{ item.name }}"
@@ -31,6 +34,7 @@
     label: "{{ item.name }}"
 
 - name: Remove logrotate.d files
+  become: yes
   ansible.builtin.file:
     path: "{{ logrotate_confd_directory }}/{{ item.name }}"
     state: absent
@@ -43,6 +47,7 @@
     label: "{{ item.name }}"
 
 - name: Start logrotate
+  become: yes
   ansible.builtin.service:
     name: "{{ logrotate_service }}"
     state: "{{ logrotate_service_state }}"
